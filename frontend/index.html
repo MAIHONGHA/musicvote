@@ -1,13 +1,120 @@
-<!doctype html>
+ <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>🎵 FHEVM Music Voting</title>
+
+    <!-- Inter font (optional, looks nicer) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+      :root{
+        --bg1:#0b1d3a;
+        --bg2:#173a6a;
+        --gold:#F5C012;
+        --note:silver;
+        --text:#eaf2ff;
+        --muted:#b9c8e6;
+        --btn:#8bd2ff;
+        --btnText:#0b1d3a;
+      }
+      *{box-sizing:border-box}
+      html,body{height:100%}
+      body{
+        margin:0;
+        font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+        color:var(--text);
+        background:linear-gradient(135deg,var(--bg1),var(--bg2));
+      }
+
+      /* Header ribbon */
+      header{
+        max-width:1080px; margin:24px auto 0; padding:0 16px;
+        display:flex; justify-content:flex-start;
+      }
+      .ribbon{
+        background:var(--gold);
+        color:#111;
+        border-radius:14px;
+        padding:14px 18px;
+        display:inline-flex; align-items:center; gap:12px;
+        box-shadow:0 10px 30px rgba(0,0,0,.25);
+        font-weight:800; letter-spacing:.2px;
+      }
+      .ribbon svg{width:26px; height:26px; fill:var(--note);}
+
+      /* Hero */
+      .hero{
+        max-width:1080px; margin:28px auto; padding:0 16px;
+        display:grid; grid-template-columns:1fr 320px; gap:24px; align-items:center;
+      }
+      .hero h1{
+        font-size:56px; line-height:1.05; margin:0 0 12px;
+      }
+      .hero h1 .accent{color:#9bd1ff}
+      .hero p{opacity:.9; max-width:560px; margin:0}
+      .btn{
+        display:inline-block; margin-top:16px;
+        padding:12px 20px; border-radius:12px; border:none;
+        background:var(--btn); color:var(--btnText); font-weight:700;
+        cursor:pointer; text-decoration:none; transition:transform .05s ease;
+      }
+      .btn:hover{transform:translateY(-1px)}
+      .btn:active{transform:translateY(0)}
+
+      /* Side yellow cards */
+      .card-yellow{
+        background:var(--gold); color:#111;
+        border-radius:16px; padding:18px;
+        box-shadow:0 10px 30px rgba(0,0,0,.25);
+      }
+      .card-title{font-size:22px; font-weight:800; display:flex; align-items:center; gap:10px}
+      .dot{width:10px; height:10px; border-radius:999px; background:#c8c8c8; display:inline-block}
+      .muted{opacity:.8; color:#333}
+
+      /* Anchor for scrolling into the React app */
+      #app{scroll-margin-top:80px}
+
+      /* Root container so the app doesn't stick to the hero */
+      #root{max-width:1080px; margin:28px auto 48px; padding:0 16px}
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <header>
+      <div class="ribbon">
+        <!-- Silver music note -->
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 3v10.55A4 4 0 1 1 10 17V7h8V3h-6z"/>
+        </svg>
+        FHEVM Music Share
+      </div>
+    </header>
+
+    <section class="hero">
+      <div>
+        <h1>Private Voting. <br/>Public <span class="accent">Trust.</span></h1>
+        <p>Upload tracks, vote anonymously with FHEVM, and see transparent results.</p>
+        <!-- Scroll to React app below -->
+        <a href="#app" class="btn">Enter App</a>
+      </div>
+
+      <div class="card-yellow">
+        <div class="card-title">
+          <span class="dot"></span>
+          MusicVote <span class="muted" style="font-weight:600">Demo</span>
+        </div>
+        <div class="muted" style="margin-top:6px">Anonymous voting dApp (demo)</div>
+        <a href="#app" class="btn" style="margin-top:14px; background:#fff; border:1px solid #111; color:#111">Reload</a>
+      </div>
+    </section>
+
+    <!-- React app mount point -->
+    <section id="app">
+      <div id="root"></div>
+    </section>
+
+    <!-- Vite/React entry -->
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

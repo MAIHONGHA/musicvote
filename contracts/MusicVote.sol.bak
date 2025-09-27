@@ -1,0 +1,82 @@
+﻿// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+
+import { FHE, euint64, ebool, externalEuint64 } from "@fhevm/solidity/lib/FHE.sol";
+
+contract MusicVote {
+    struct Track {
+        address uploader;
+        string title;
+        string cid;
+        euint64 sum;
+        euint64 count;
+    }
+
+    address public owner;
+    uint256 public tracksCount;
+    mapping(uint256 => Track) private tracks;
+    mapping(uint256 => mapping(address => bool)) public hasVoted;
+
+    event TrackAdded(uint256 indexed id, address indexed uploader, string title, string cid);
+    event Voted(uint256 indexed id, address indexed voter);
+
+    modifier onlyOwner() { require(msg.sender == owner, "not-owner"); _; }
+
+    constructor() { owner = msg.sender; }
+
+    function addTrack(string calldata title, string calldata cid) external returns (uint256 id) {
+        id = tracksCount++;
+        Track storage t = tracks[id];
+        t.uploader = msg.sender;
+        t.title = title;
+        t.cid = cid;
+        t.sum = FHE.asEuint64(0);
+        t.count = FHE.asEuint64(0);
+        FHE.allow(t.sum, address(this));
+        FHE.allow(t.count, address(this));
+        emit TrackAdded(id, msg.sender, title, cid);
+    }
+
+    function vote(uint256 id, externalEuint64 extRating, bytes calldata att) external {
+        require(id < tracksCount, "bad-id");
+        require(!hasVoted[id][msg.sender], "already-voted");
+
+        euint64 rating = FHE.fromExternal(extRating, att);
+
+        ebool ge1 = FHE.ge(rating, FHE.asEuint64(1));
+        ebool le5 = FHE.le(rating, FHE.asEuint64(5));
+        ebool inRange = FHE.and(ge1, le5);
+
+        euint64 safeRating = FHE.select(inRange, rating, FHE.asEuint64(0));
+        euint64 inc = FHE.select(inRange, FHE.asEuint64(1), FHE.asEuint64(0));
+
+        tracks[id].sum = FHE.add(tracks[id].sum, safeRating);
+        tracks[id].count = FHE.add(tracks[id].count, inc);
+        FHE.allow(tracks[id].sum, address(this));
+        FHE.allow(tracks[id].count, address(this));
+
+        hasVoted[id][msg.sender] = true;
+        emit Voted(id, msg.sender);
+    }
+
+    function getAggregates(uint256 id) external returns (euint64 sum, euint64 count) {
+        require(id < tracksCount, "bad-id");
+        FHE.allow(tracks[id].sum, msg.sender);
+        FHE.allow(tracks[id].count, msg.sender);
+        FHE.allow(tracks[id].sum, address(this));
+        FHE.allow(tracks[id].count, address(this));
+        return (tracks[id].sum, tracks[id].count);
+    }
+
+    function makeTallyPublic(uint256 id) external onlyOwner {
+        require(id < tracksCount, "bad-id");
+        FHE.makePubliclyDecryptable(tracks[id].sum);
+        FHE.makePubliclyDecryptable(tracks[id].count);
+    }
+
+    function getTrack(uint256 id) external view returns (address, string memory, string memory) {
+        require(id < tracksCount, "bad-id");
+        Track storage t = tracks[id];
+        return (t.uploader, t.title, t.cid);
+    }
+}

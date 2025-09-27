@@ -1,21 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
+// https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  resolve: {
-    alias: {
-      process: 'process/browser',
-      buffer: 'buffer',
-      events: 'events/',
-      util: 'util/',
-    },
-  },
-  define: {
-    'process.env': {},  // tránh lỗi process.env
-    global: 'window',   // một số lib mong có global
-  },
-  optimizeDeps: {
-    include: ['buffer', 'process', 'events', 'util'],
-  },
 })
