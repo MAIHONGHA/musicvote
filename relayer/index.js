@@ -5,7 +5,7 @@ import axios from 'axios';
 
 const app = express();
 
-const PORT         = process.env.PORT  process.env.RELAYER_PORT  3001;
+const PORT = process.env.PORT || 3001;
 const FHE_RPC      = process.env.FHE_RPC || 'https://relayer.testnet.zama.cloud';
 const CORS_ORIGIN  = process.env.CORS_ORIGIN || '*';
 
