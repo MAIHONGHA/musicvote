@@ -12,7 +12,6 @@ const CORS_ORIGIN = process.env.CORS_ORIGIN || '*';
 app.use(cors({ origin: CORS_ORIGIN }));
 app.use(express.json());
 
-app.get('/', (_req, res) => res.send('Relayer is running!'));
 app.get('/health', (_req, res) => res.json({ ok: true }));
 
 app.post('/rpc', async (req, res) => {
