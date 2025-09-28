@@ -1,17 +1,18 @@
-// index.js
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import axios from 'axios';
 
 const app = express();
-const PORT       = process.env.PORT || 3001;
-const RPC_URL    = process.env.RPC_URL || 'https://eth-sepolia.public.blastapi.io';
-const CORS_ORIGIN= process.env.CORS_ORIGIN || '*';
+
+const PORT        = process.env.PORT || 3001;
+const RPC_URL     = process.env.RPC_URL || 'https://eth-sepolia.public.blastapi.io';
+const CORS_ORIGIN = process.env.CORS_ORIGIN || '*';
 
 app.use(cors({ origin: CORS_ORIGIN }));
 app.use(express.json());
 
+app.get('/', (_req, res) => res.send('Relayer is running!'));
 app.get('/health', (_req, res) => res.json({ ok: true }));
 
 app.post('/rpc', async (req, res) => {
