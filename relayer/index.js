@@ -4,27 +4,34 @@ import cors from 'cors';
 import axios from 'axios';
 
 const app = express();
-
 const PORT = process.env.PORT || 3001;
-const FHE_RPC      = process.env.FHE_RPC || 'https://relayer.testnet.zama.cloud';
-const CORS_ORIGIN  = process.env.CORS_ORIGIN || '*';
+const FHE_RPC = process.env.FHE_RPC || 'https://fhevm.zama.ai';
 
-app.use(cors({ origin: CORS_ORIGIN }));
+app.use(cors({ origin: '*' }));
 app.use(express.json());
 
-app.get('/', (_req, res) => res.send('Relayer is running!'));
 app.get('/health', (_req, res) => res.json({ ok: true }));
 
-// Forward JSON-RPC requests to FHEVM
+app.post('/encrypt-one', async (req, res) => {
+  try {
+    const bits = req.body?.bits ?? 64;
+    const { data } = await axios.post(${FHE_RPC}/encrypt-one, { bits });
+    res.json(data);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'encrypt-one failed' });
+  }
+});
+
 app.post('/rpc', async (req, res) => {
   try {
     const { data } = await axios.post(FHE_RPC, req.body, {
       headers: { 'Content-Type': 'application/json' },
-      timeout: 30000,
     });
     res.json(data);
   } catch (err) {
-    res.status(500).json({ error: 'rpc failed', detail: err.message });
+    console.error(err);
+    res.status(500).json({ error: 'rpc proxy failed' });
   }
 });
 
